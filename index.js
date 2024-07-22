@@ -1,11 +1,20 @@
 const express = require("express");
 const { createServer } = require("http");
+var cors = require("cors");
 const { Server } = require("socket.io");
 
 const app = express();
+app.use(
+  cors({
+    origin: "*"
+  })
+);
 const httpServer = createServer(app);
 const io = new Server(httpServer, {
-  /* options */
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
 });
 
 const dateRegex =
