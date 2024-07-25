@@ -79,7 +79,8 @@ io.on("connection", (socket) => {
       !checkWordsInText(message, ["get", "treatment"]) &&
       !checkWordsInText(message, ["how", "help", "service"]) &&
       !checkWordsInText(message, ["does", "help", "service"]) &&
-      !checkWordsInText(message, ["service", "help"])
+      !checkWordsInText(message, ["service", "help"]) &&
+      !checkWordsInText(message, ["how", "does", "help"])
     ) {
       socket.emit("response", {
         response: "Sorry i couldn't catch that, can you rephrase?"
@@ -182,6 +183,7 @@ io.on("connection", (socket) => {
     }
     if (
       checkWordsInText(message, ["how", "help", "service"]) ||
+      checkWordsInText(message, ["how", "does", "help"]) ||
       checkWordsInText(message, ["does", "help", "service"]) ||
       checkWordsInText(message, ["service", "help"])
     ) {
