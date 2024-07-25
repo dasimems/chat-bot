@@ -17,6 +17,14 @@ const io = new Server(httpServer, {
   }
 });
 
+const definitions = {
+  facial:
+    "Facial treatments are cosmetic procedures designed to improve the health & appearance of the skin on the face",
+  body: "Body treatment are therapeutic or cosmetic procedures aimed at improving the health and appearance of the skin on the body",
+  pediMani:
+    "This focus on the care and cosmetic enhancement of the nails and skins on the hands and feet"
+};
+
 const dateRegex =
   /\b(?:\d{1,4}[-/\s]?\d{1,2}[-/\s]?\d{1,4}|\d{1,2}(?:st|nd|rd|th)?[-\s/]?(?:jan(?:uary)?|feb(?:ruary)?|mar(?:ch)?|apr(?:il)?|may|jun(?:e)?|jul(?:y)?|aug(?:ust)?|sep(?:tember)?|oct(?:ober)?|nov(?:ember)?|dec(?:ember)?)[-\s/]?(?:\d{2,4}|this year))\b/i;
 
@@ -49,10 +57,32 @@ io.on("connection", (socket) => {
       !checkWordsInText(message, ["book"]) &&
       !checkWordsInText(message, ["appointment"]) &&
       !checkWordsInText(message, ["okay"]) &&
-      !checkDateInMessage(message)
+      !checkWordsInText(message, ["facial"]) &&
+      !checkWordsInText(message, ["facial", "treatment"]) &&
+      !checkWordsInText(message, ["body"]) &&
+      !checkWordsInText(message, ["body", "treatment"]) &&
+      !checkWordsInText(message, ["meaning"]) &&
+      !checkWordsInText(message, ["these", "mean"]) &&
+      !checkWordsInText(message, ["they", "mean"]) &&
+      !checkWordsInText(message, ["this", "mean"]) &&
+      !checkDateInMessage(message) &&
+      !checkWordsInText(message, ["pedi"]) &&
+      !checkWordsInText(message, ["mani"]) &&
+      !checkWordsInText(message, ["pedi", "mani"]) &&
+      !checkWordsInText(message, ["pedi", "mani", "treatment"]) &&
+      !checkWordsInText(message, ["why", "need", "treatment"]) &&
+      !checkWordsInText(message, ["why", "need"]) &&
+      !checkWordsInText(message, ["why", "treatment"]) &&
+      !checkWordsInText(message, ["I", "need", "treatment"]) &&
+      !checkWordsInText(message, ["how", "get", "treatment"]) &&
+      !checkWordsInText(message, ["how", "get"]) &&
+      !checkWordsInText(message, ["get", "treatment"]) &&
+      !checkWordsInText(message, ["how", "help", "service"]) &&
+      !checkWordsInText(message, ["does", "help", "service"]) &&
+      !checkWordsInText(message, ["service", "help"])
     ) {
       socket.emit("response", {
-        response: "Welcome to heritage spa, how can we assist you today?"
+        response: "Sorry i couldn't catch that, can you rephrase?"
       });
     }
 
@@ -70,7 +100,50 @@ io.on("connection", (socket) => {
       checkWordsInText(message, ["offer"])
     ) {
       socket.emit("response", {
-        response: "We offer \n Manicure \n Pendicure \n Facial treatment"
+        response:
+          "We offer, Facial treatment, Body treatment and Pedi & Mani treatment"
+      });
+    }
+    if (
+      checkWordsInText(message, ["facial"]) ||
+      checkWordsInText(message, ["facial", "treatment"])
+    ) {
+      socket.emit("response", {
+        response: definitions.facial
+      });
+    }
+    if (
+      checkWordsInText(message, ["body"]) ||
+      checkWordsInText(message, ["body", "treatment"])
+    ) {
+      socket.emit("response", {
+        response: definitions.body
+      });
+    }
+    if (
+      checkWordsInText(message, ["meaning"]) ||
+      checkWordsInText(message, ["these", "mean"]) ||
+      checkWordsInText(message, ["they", "mean"]) ||
+      checkWordsInText(message, ["this", "mean"])
+    ) {
+      socket.emit("response", {
+        response: `Facial treatment: ${definitions.facial}`
+      });
+      socket.emit("response", {
+        response: `Body treatment: ${definitions.body}`
+      });
+      socket.emit("response", {
+        response: `Pedi & mani treatment: ${definitions.pediMani}`
+      });
+    }
+    if (
+      checkWordsInText(message, ["pedi"]) ||
+      checkWordsInText(message, ["mani"]) ||
+      checkWordsInText(message, ["pedi", "mani"]) ||
+      checkWordsInText(message, ["pedi", "mani", "treatment"])
+    ) {
+      socket.emit("response", {
+        response: definitions.pediMani
       });
     }
     if (
@@ -82,6 +155,49 @@ io.on("connection", (socket) => {
         response: "What time and date would you like to check in?"
       });
     }
+    if (
+      checkWordsInText(message, ["why", "need", "treatment"]) ||
+      checkWordsInText(message, ["why", "need"]) ||
+      checkWordsInText(message, ["why", "treatment"])
+    ) {
+      socket.emit("response", {
+        response: "1.) Improve your health and maintenance"
+      });
+      socket.emit("response", {
+        response: "2.) Improve your Psychological well being"
+      });
+      socket.emit("response", {
+        response: "3.) Aesthetics"
+      });
+    }
+    if (
+      checkWordsInText(message, ["I", "need", "treatment"]) ||
+      checkWordsInText(message, ["how", "get", "treatment"]) ||
+      checkWordsInText(message, ["how", "get"]) ||
+      checkWordsInText(message, ["get", "treatment"])
+    ) {
+      socket.emit("response", {
+        response: "You can get treatment only when you book an appointment"
+      });
+    }
+    if (
+      checkWordsInText(message, ["how", "help", "service"]) ||
+      checkWordsInText(message, ["does", "help", "service"]) ||
+      checkWordsInText(message, ["service", "help"])
+    ) {
+      socket.emit("response", {
+        response: "It helps in terms of:"
+      });
+      socket.emit("response", {
+        response: "1.) Improved skin health and maintenance"
+      });
+      socket.emit("response", {
+        response: "2.) Aesthetic enhancement"
+      });
+      socket.emit("response", {
+        response: "3.) Stress relief and relaxation"
+      });
+    }
 
     if (checkDateInMessage(message)) {
       socket.emit("response", {
@@ -90,6 +206,11 @@ io.on("connection", (socket) => {
       });
     }
   });
+
+  socket.on("connect_app", () => {
+    socket.emit("connection_successful", { socket_id: socket.id });
+  });
+
   // ...
 });
 
